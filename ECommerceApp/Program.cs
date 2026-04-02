@@ -1,6 +1,8 @@
 using ECommerceApp.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ECommerceApp.Models;
+using ECommerceApp.Repositories;
 
 namespace ECommerceApp
 {
@@ -15,9 +17,11 @@ namespace ECommerceApp
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            // Identity configuration
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                 .AddRoles<IdentityRole>()
+                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -38,6 +42,8 @@ namespace ECommerceApp
             app.UseStaticFiles();
 
             app.UseRouting();
+            // Authentication and Authorization
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
