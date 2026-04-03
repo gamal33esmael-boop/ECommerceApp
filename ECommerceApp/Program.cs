@@ -66,6 +66,10 @@ namespace ECommerceApp
 
             app.Run();
             //My dear friend, I hope this code helps you understand how to set up an e-commerce application using ASP.NET Core with Identity and a generic repository pattern. If you have any questions or need further assistance, feel free to ask!
+
+
+
+            // my commmentnlkfklsg 2323435
         }
     }
 }
