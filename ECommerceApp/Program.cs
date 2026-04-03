@@ -1,5 +1,8 @@
 using ECommerceApp.DbCotext;
+using ECommerceApp.Interfaces;
 using ECommerceApp.Models;
+using ECommerceApp.Repository; // ??? ???? ????????????? ?????
+using ECommerceApp.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,22 +14,31 @@ namespace ECommerceApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // 1. Database
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+            // 2. Identity (???? ?? ??????? ???)
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options => {
                 options.SignIn.RequireConfirmedAccount = false;
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+            // 3. Register Repositories (?????? ?? ???? ????)
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages(); // ???? ?????? ??? Identity
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -34,7 +46,6 @@ namespace ECommerceApp
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -43,11 +54,14 @@ namespace ECommerceApp
 
             app.UseRouting();
 
+            // 4. ???? ?? ??????? ??? ??????
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();
