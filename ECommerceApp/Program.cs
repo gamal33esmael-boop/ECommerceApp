@@ -52,7 +52,7 @@ namespace ECommerceApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRouting(); //Gemy
+            app.UseRouting(); //G
 
             // 4. ???? ?? ??????? ??? ??????
             app.UseAuthentication();
