@@ -25,7 +25,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (User.HasClaim("AdminOnly", "true")){
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                        </li>}
+                        
                     </ul>
+                    <form method="GET" action="/Product/Search" style="display:flex">
+                       
+                        <input type="text" name="name" placeholder="ابحث..." dir="auto">
+                        <button type="submit">اذهب</button>
+                    </form>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
