@@ -2,7 +2,6 @@ using ECommerceApp.DbCotext;
 using ECommerceApp.Interfaces;
 using ECommerceApp.Models;
 using ECommerceApp.Repository; // ??? ???? ????????????? ?????
-using ECommerceApp.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +9,7 @@ namespace ECommerceApp
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -24,11 +23,24 @@ namespace ECommerceApp
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             // 2. Identity (???? ?? ??????? ???)
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options => {
-                options.SignIn.RequireConfirmedAccount = false;
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
             })
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+ .AddEntityFrameworkStores<AppDbContext>()
+ .AddDefaultTokenProviders();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+            });
+            //Authorization
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy =>
+                    policy.RequireClaim("IsAdmin", "true"));
+            });
 
             // 3. Register Repositories (?????? ?? ???? ????)
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -60,7 +72,7 @@ namespace ECommerceApp
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.MapRazorPages();
 

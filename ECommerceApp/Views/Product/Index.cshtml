@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Product>
+
+<div class="row mt-4">
+
+    <!-- Sidebar -->
+    <div class="col-md-2">
+        <form asp-action="Index" method="get">
+
+            <h6>Price Range</h6>
+            <input type="number" name="minPrice" class="form-control mb-2" placeholder="Min">
+            <input type="number" name="maxPrice" class="form-control mb-2" placeholder="Max">
+            <button type="submit" class="btn btn-primary w-100">Apply</button>
+        </form>
+    </div>
+
+    <!-- Products -->
+    <div class="col-md-10">
+        <div class="row row-cols-md-4 g-3">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="@item.Image" class="card-img-top" style="height:150px; object-fit:cover" />
+                        <div class="card-body">
+                            <h6>@item.Name</h6>
+                            <p class="text-primary fw-bold">@item.Price $</p>
+                        </div>
+                        <div class="card-footer d-flex gap-2">
+                            <a asp-action="Buy" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-primary w-50">Buy</a>
+                            <a asp-action="AddtoCart" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-secondary w-50">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

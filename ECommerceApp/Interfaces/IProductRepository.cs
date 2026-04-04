@@ -5,5 +5,6 @@ namespace ECommerceApp.Interfaces
 {
     public interface IProductRepository:IGenericRepository<Product>
     {
+        List<Product> SearchProduct(string name);
     }
 }
